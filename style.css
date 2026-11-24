@@ -1,0 +1,176 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eee8ff, #d9ccfa);
+    color: #39265f;
+    padding: 25px 15px;
+}
+
+.game-container {
+    max-width: 540px;
+    margin: auto;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 25px;
+    box-shadow: 0 12px 35px rgba(76, 48, 120, 0.15);
+    text-align: center;
+}
+
+.logo {
+    color: #8865c9;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 34px;
+    color: #65449e;
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: #897da1;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    background: #f1ebff;
+    padding: 13px 5px;
+    border-radius: 14px;
+}
+
+.stat-card span {
+    display: block;
+    font-size: 12px;
+    color: #8068a8;
+    margin-bottom: 7px;
+}
+
+.stat-card strong {
+    font-size: 20px;
+    color: #65449e;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.card {
+    aspect-ratio: 1;
+    border: none;
+    border-radius: 14px;
+    background: #8b70c9;
+    color: white;
+    cursor: pointer;
+    font-size: clamp(23px, 7vw, 36px);
+    box-shadow: 0 4px 7px rgba(76, 48, 120, 0.13);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.card:hover:not(:disabled) {
+    transform: translateY(-3px);
+}
+
+.card.revealed {
+    background: #eee7ff;
+    border: 2px solid #b39ce5;
+}
+
+.card.matched {
+    background: #dff5e8;
+    border: 2px solid #80cba0;
+    cursor: default;
+}
+
+.card:disabled {
+    cursor: default;
+}
+
+.restart-btn,
+#play-again {
+    margin-top: 24px;
+    border: none;
+    background: #7655b6;
+    color: white;
+    padding: 13px 28px;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.restart-btn:hover,
+#play-again:hover {
+    background: #5f419b;
+}
+
+.instructions {
+    margin-top: 20px;
+    color: #897da1;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.victory {
+    margin-top: 22px;
+    background: #f1ebff;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.victory h2 {
+    color: #65449e;
+    margin-bottom: 10px;
+}
+
+.victory p {
+    margin: 8px 0;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    margin-top: 25px;
+    color: #a295b7;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 380px) {
+    .game-container {
+        padding: 17px;
+    }
+
+    .board {
+        gap: 7px;
+    }
+
+    .stats {
+        gap: 6px;
+    }
+
+    .stat-card span {
+        font-size: 10px;
+    }
+}

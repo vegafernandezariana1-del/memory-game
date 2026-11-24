@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#8b70c9">
+    <title>Memory Game | Cyber Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="game-container">
+
+        <header class="header">
+            <div class="logo">🔐 CYBER MEMORY</div>
+            <h1>Memory Game</h1>
+            <p>¡Encuentra las parejas y protege el sistema!</p>
+        </header>
+
+        <section class="stats">
+            <div class="stat-card">
+                <span>⏱️ Tiempo</span>
+                <strong id="timer">00:00</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>🎯 Movimientos</span>
+                <strong id="moves">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>🛡️ Parejas</span>
+                <strong id="matches">0/8</strong>
+            </div>
+        </section>
+
+        <section class="board" id="game-board"
+                 aria-label="Tablero de memoria">
+        </section>
+
+        <button id="restart-btn" class="restart-btn">
+            ↻ Nueva partida
+        </button>
+
+        <p class="instructions">
+            Encuentra las 8 parejas de ciberseguridad.
+            ¡Pon a prueba tu memoria!
+        </p>
+
+        <section id="victory" class="victory hidden">
+            <h2>🎉 ¡Excelente trabajo!</h2>
+            <p>Has encontrado todas las parejas.</p>
+            <p id="final-score"></p>
+            <button id="play-again">Jugar otra vez</button>
+        </section>
+
+        <footer>
+            <p>CYBER MEMORY | Aprende jugando 🔒</p>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
