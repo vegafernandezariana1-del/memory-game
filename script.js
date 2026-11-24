@@ -371,10 +371,18 @@ function endGame() {
     gameOverScreen.classList.remove("hidden");
 }
 
-// Botones
-startButton.addEventListener("click", startGame);
-restartButton.addEventListener("click", startGame);
+// Botones compatibles con celulares y computadoras
+function addButtonEvents(button) {
+    button.addEventListener("click", startGame);
 
+    button.addEventListener("touchend", event => {
+        event.preventDefault();
+        startGame();
+    }, { passive: false });
+}
+
+addButtonEvents(startButton);
+addButtonEvents(restartButton);
 // Controles: teclado
 document.addEventListener("keydown", event => {
     if (event.code === "Space" || event.code === "ArrowUp") {
