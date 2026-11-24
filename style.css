@@ -55,19 +55,6 @@ body {
     margin-bottom: 10px;
 }
 
-.header h1 {
-    font-size: clamp(30px, 6vw, 45px);
-    font-weight: 900;
-    letter-spacing: 3px;
-    color: #65449e;
-    text-shadow: 2px 3px 0 #e7dcff;
-}
-
-.header p {
-    color: #897da1;
-    font-size: 14px;
-    margin-top: 8px;
-}
 
 /* =================================
    PANEL DE PUNTUACIÓN
@@ -301,4 +288,178 @@ footer {
         padding: 12px 18px;
         font-size: 12px;
     }
+
+/* ===== MEJORAS PARA CELULARES ===== */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.game-container {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+}
+
+/* Canvas adaptable */
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: none;
+}
+
+/* Pantallas de inicio y Game Over */
+
+/* Pantallas de inicio y Game Over */
+#start-screen,
+#game-over {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+    gap: 8px;
+    background: rgba(33, 24, 61, 0.88);
+    overflow-y: auto;
+}
+
+#start-screen.hidden,
+#game-over.hidden {
+    display: none;
+}
+
+/* Botones */
+#start-btn,
+#restart-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: min(220px, 85%);
+    min-height: 50px;
+    padding: 12px 18px;
+    margin: 5px auto;
+    font-size: 17px;
+    font-weight: 800;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    touch-action: manipulation;
+    flex-shrink: 0;
+}
+
+/* Ajustes para celulares en horizontal */
+@media (max-width: 900px) and (orientation: landscape) {
+    .game-area {
+        max-height: 72dvh;
+    }
+
+    #gameCanvas {
+        max-height: 72dvh;
+        object-fit: contain;
+    }
+
+    #start-screen,
+    #game-over {
+        padding: 5px;
+        gap: 3px;
+    }
+
+    #start-btn,
+    #restart-btn {
+        min-height: 42px;
+        padding: 8px 16px;
+        margin: 3px auto;
+        font-size: 15px;
+    }
+
+    #game-over h2,
+    #start-screen h2 {
+        font-size: 22px;
+        margin: 3px;
+    }
+}
+
+
+/* Ocultar instrucciones */
+.instructions {
+    display: none !important;
+}
+
+/* Diseño horizontal en móviles */
+@media (max-width: 900px) and (orientation: landscape) {
+    body {
+        min-height: 100dvh;
+        padding: 5px;
+        overflow: hidden;
+    }
+
+    .game-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 8px;
+    }
+
+    header {
+        margin: 0 0 5px;
+    }
+
+    header p {
+        display: none;
+    }
+
+    #gameCanvas {
+        width: 100%;
+        max-height: 65dvh;
+        object-fit: contain;
+    }
+
+    #start-screen,
+    #game-over {
+        padding: 8px;
+    }
+
+    #start-btn,
+    #restart-btn {
+        min-height: 44px;
+        margin-top: 8px;
+    }
+
+    footer {
+        display: none;
+    }
+}
+
+/* Aviso cuando el celular está vertical */
+@media (max-width: 900px) and (orientation: portrait) {
+    body::before {
+        content: "↻ GIRA TU CELULAR PARA JUGAR EN HORIZONTAL";
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: #21183d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 30px;
+        font-size: 20px;
+        font-weight: 800;
+    }
+}
+
 }
