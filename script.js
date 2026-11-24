@@ -1,186 +1,396 @@
 
-// Elementos del juego
-const board = document.getElementById("game-board");
-const timerDisplay = document.getElementById("timer");
-const movesDisplay = document.getElementById("moves");
-const matchesDisplay = document.getElementById("matches");
-const restartBtn = document.getElementById("restart-btn");
-const victory = document.getElementById("victory");
-const finalScore = document.getElementById("final-score");
-const playAgain = document.getElementById("play-again");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-// Cartas de ciberseguridad
-const symbols = [
-    "🔐", "💻", "🛡️", "🦠",
-    "🔑", "🌐", "👾", "🔒"
-];
+// Elementos de la interfaz
+const scoreElement = document.getElementById("score");
+const bestElement = document.getElementById("best-score");
+const levelElement = document.getElementById("level");
+const startScreen = document.getElementById("start-screen");
+const gameOverScreen = document.getElementById("game-over");
+const startButton = document.getElementById("start-btn");
+const restartButton = document.getElementById("restart-btn");
+const finalScoreElement = document.getElementById("final-score");
 
-let cards = [];
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
-let moves = 0;
-let matches = 0;
-let seconds = 0;
-let timerInterval = null;
-let gameStarted = false;
+// Configuración
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+const GROUND = 245;
+const GRAVITY = 0.65;
+const JUMP_FORCE = -13;
 
-// Mezclar las cartas aleatoriamente
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
+let tux;
+let obstacles = [];
+let score = 0;
+let bestScore = Number(localStorage.getItem("tuxBest")) || 0;
+let speed = 5;
+let level = 1;
+let spawnTimer = 0;
+let nextSpawn = 100;
+let gameRunning = false;
+let animationId = null;
+let lastTime = 0;
+let elapsed = 0;
+let backgroundOffset = 0;
+
+bestElement.textContent = bestScore;
+
+// Crear al personaje
+function createTux() {
+    return {
+        x: 85,
+        y: GROUND - 62,
+        width: 43,
+        height: 62,
+        velocityY: 0,
+        jumping: false,
+        legAnimation: 0
+    };
 }
 
-// Crear el tablero
-function createBoard() {
-    board.innerHTML = "";
+// Dibujar Tux
+function drawTux() {
+    const x = tux.x;
+    const y = tux.y;
 
-    cards = shuffle([...symbols, ...symbols]);
+    tux.legAnimation += 0.15;
 
-    cards.forEach((symbol, index) => {
-        const card = document.createElement("button");
+    // Patas
+    const legMove = Math.sin(tux.legAnimation) * 5;
 
-        card.classList.add("card");
-        card.textContent = "?";
-        card.dataset.symbol = symbol;
-        card.dataset.index = index;
-        card.setAttribute("aria-label", "Carta oculta");
+    ctx.fillStyle = "#ff9f1c";
+    ctx.beginPath();
+    ctx.ellipse(x + 12, y + 58 + (tux.jumping ? 0 : legMove),
+        9, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-        card.addEventListener("click", () => flipCard(card));
+    ctx.beginPath();
+    ctx.ellipse(x + 32, y + 58 - (tux.jumping ? 0 : legMove),
+        9, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-        board.appendChild(card);
+    // Cuerpo
+    ctx.fillStyle = "#171522";
+    ctx.beginPath();
+    ctx.ellipse(x + 22, y + 34, 21, 29, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Barriga blanca
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(x + 22, y + 40, 14, 20, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cabeza
+    ctx.fillStyle = "#171522";
+    ctx.beginPath();
+    ctx.arc(x + 22, y + 13, 17, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cara blanca
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(x + 22, y + 18, 12, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ojos
+    ctx.fillStyle = "#171522";
+    ctx.beginPath();
+    ctx.arc(x + 16, y + 12, 2.5, 0, Math.PI * 2);
+    ctx.arc(x + 28, y + 12, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pico
+    ctx.fillStyle = "#ff9f1c";
+    ctx.beginPath();
+    ctx.moveTo(x + 17, y + 21);
+    ctx.lineTo(x + 27, y + 21);
+    ctx.lineTo(x + 22, y + 27);
+    ctx.closePath();
+    ctx.fill();
+}
+
+// Fondo
+function drawBackground() {
+    // Cielo
+    ctx.fillStyle = "#21183d";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // Estrellas
+    ctx.fillStyle = "#bda9ff";
+
+    for (let i = 0; i < 35; i++) {
+        const x = (i * 97 - backgroundOffset * 0.3) % WIDTH;
+        const y = 20 + (i * 43) % 160;
+
+        ctx.fillRect(
+            x < 0 ? x + WIDTH : x,
+            y,
+            2,
+            2
+        );
+    }
+
+    // Edificios del fondo
+    for (let i = 0; i < 9; i++) {
+        const buildingX =
+            (i * 110 - backgroundOffset * 0.5) % (WIDTH + 110);
+
+        const x = buildingX < -70 ? buildingX + WIDTH + 110 : buildingX;
+        const height = 45 + (i % 4) * 18;
+
+        ctx.fillStyle = "#30234f";
+        ctx.fillRect(x, GROUND - height, 65, height);
+
+        ctx.fillStyle = "#a78bfa";
+
+        for (let j = 0; j < 3; j++) {
+            ctx.fillRect(x + 12 + j * 16, GROUND - height + 12, 5, 5);
+        }
+    }
+
+    // Suelo
+    ctx.fillStyle = "#a78bfa";
+    ctx.fillRect(0, GROUND, WIDTH, 3);
+
+    ctx.fillStyle = "#514078";
+
+    for (let i = 0; i < 25; i++) {
+        const x = (i * 45 - backgroundOffset) % WIDTH;
+        ctx.fillRect(x < 0 ? x + WIDTH : x, GROUND + 15, 20, 2);
+    }
+}
+
+// Crear obstáculos
+function createObstacle() {
+    const types = ["virus", "malware", "firewall"];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    const obstacle = {
+        x: WIDTH + 20,
+        y: GROUND - 42,
+        width: type === "firewall" ? 32 : 38,
+        height: type === "firewall" ? 42 : 38,
+        type: type
+    };
+
+    obstacles.push(obstacle);
+}
+
+// Dibujar obstáculos
+function drawObstacles() {
+    obstacles.forEach(obstacle => {
+        const x = obstacle.x;
+        const y = obstacle.y;
+
+        if (obstacle.type === "virus") {
+            // Virus
+            ctx.fillStyle = "#ff5470";
+            ctx.beginPath();
+            ctx.arc(x + 19, y + 19, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Picos
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 / 8) * i;
+
+                ctx.beginPath();
+                ctx.moveTo(
+                    x + 19 + Math.cos(angle) * 13,
+                    y + 19 + Math.sin(angle) * 13
+                );
+                ctx.lineTo(
+                    x + 19 + Math.cos(angle) * 21,
+                    y + 19 + Math.sin(angle) * 21
+                );
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = "#ff5470";
+                ctx.stroke();
+            }
+
+            // Ojos
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(x + 12, y + 14, 4, 4);
+            ctx.fillRect(x + 23, y + 14, 4, 4);
+
+        } else if (obstacle.type === "malware") {
+            // Malware
+            ctx.fillStyle = "#fbbf24";
+            ctx.fillRect(x + 4, y + 4, 30, 30);
+
+            ctx.fillStyle = "#21183d";
+            ctx.fillRect(x + 10, y + 12, 5, 5);
+            ctx.fillRect(x + 23, y + 12, 5, 5);
+            ctx.fillRect(x + 15, y + 23, 10, 3);
+
+        } else {
+            // Firewall
+            ctx.fillStyle = "#fb7185";
+            ctx.fillRect(x, y, 32, 42);
+
+            ctx.fillStyle = "#fecdd3";
+            ctx.fillRect(x + 4, y + 6, 24, 5);
+            ctx.fillRect(x + 4, y + 18, 24, 5);
+            ctx.fillRect(x + 4, y + 30, 24, 5);
+        }
     });
 }
 
-// Voltear una carta
-function flipCard(card) {
-    if (
-        lockBoard ||
-        card === firstCard ||
-        card.classList.contains("matched") ||
-        card.classList.contains("revealed")
-    ) {
-        return;
+// Salto
+function jump() {
+    if (gameRunning && !tux.jumping) {
+        tux.velocityY = JUMP_FORCE;
+        tux.jumping = true;
     }
-
-    if (!gameStarted) {
-        startTimer();
-        gameStarted = true;
-    }
-
-    card.textContent = card.dataset.symbol;
-    card.classList.add("revealed");
-    card.setAttribute("aria-label", "Carta " + card.dataset.symbol);
-
-    if (!firstCard) {
-        firstCard = card;
-        return;
-    }
-
-    secondCard = card;
-    moves++;
-
-    movesDisplay.textContent = moves;
-
-    checkMatch();
 }
 
-// Comprobar si son iguales
-function checkMatch() {
-    const isMatch =
-        firstCard.dataset.symbol === secondCard.dataset.symbol;
+// Actualizar personaje
+function updateTux(delta) {
+    tux.velocityY += GRAVITY * delta;
+    tux.y += tux.velocityY * delta;
 
-    if (isMatch) {
-        firstCard.classList.add("matched");
-        secondCard.classList.add("matched");
+    if (tux.y >= GROUND - tux.height) {
+        tux.y = GROUND - tux.height;
+        tux.velocityY = 0;
+        tux.jumping = false;
+    }
+}
 
-        firstCard.disabled = true;
-        secondCard.disabled = true;
+// Colisiones
+function checkCollision(a, b) {
+    const margin = 7;
 
-        matches++;
+    return (
+        a.x + margin < b.x + b.width - margin &&
+        a.x + a.width - margin > b.x + margin &&
+        a.y + margin < b.y + b.height - margin &&
+        a.y + a.height - margin > b.y + margin
+    );
+}
 
-        matchesDisplay.textContent = matches + "/8";
+// Actualizar obstáculos
+function updateObstacles(delta) {
+    spawnTimer += delta;
 
-        resetTurn();
+    if (spawnTimer >= nextSpawn) {
+        createObstacle();
+        spawnTimer = 0;
+        nextSpawn = 75 + Math.random() * 55;
+    }
 
-        if (matches === 8) {
-            finishGame();
+    obstacles.forEach(obstacle => {
+        obstacle.x -= speed * delta;
+    });
+
+    obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+
+    for (const obstacle of obstacles) {
+        if (checkCollision(tux, obstacle)) {
+            endGame();
+            return;
         }
-
-    } else {
-        lockBoard = true;
-
-        setTimeout(() => {
-            firstCard.textContent = "?";
-            secondCard.textContent = "?";
-
-            firstCard.classList.remove("revealed");
-            secondCard.classList.remove("revealed");
-
-            firstCard.setAttribute("aria-label", "Carta oculta");
-            secondCard.setAttribute("aria-label", "Carta oculta");
-
-            resetTurn();
-        }, 900);
     }
 }
 
-// Reiniciar turno
-function resetTurn() {
-    firstCard = null;
-    secondCard = null;
-    lockBoard = false;
+// Actualizar puntuación y dificultad
+function updateScore(delta) {
+    elapsed += delta;
+    score = Math.floor(elapsed * 0.5);
+
+    level = Math.floor(score / 100) + 1;
+    speed = Math.min(5 + (level - 1) * 0.8, 13);
+
+    scoreElement.textContent = score;
+    levelElement.textContent = level;
 }
 
-// Iniciar cronómetro
-function startTimer() {
-    timerInterval = setInterval(() => {
-        seconds++;
+// Bucle principal
+function gameLoop(timestamp) {
+    if (!gameRunning) return;
 
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
+    const delta = lastTime
+        ? Math.min((timestamp - lastTime) / 16.67, 2)
+        : 1;
 
-        timerDisplay.textContent =
-            String(minutes).padStart(2, "0") + ":" +
-            String(remainingSeconds).padStart(2, "0");
+    lastTime = timestamp;
 
-    }, 1000);
+    updateScore(delta);
+    backgroundOffset += speed * delta;
+
+    updateTux(delta);
+    updateObstacles(delta);
+
+    drawBackground();
+    drawTux();
+    drawObstacles();
+
+    if (gameRunning) {
+        animationId = requestAnimationFrame(gameLoop);
+    }
+}
+
+// Iniciar partida
+function startGame() {
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+
+    score = 0;
+    speed = 5;
+    level = 1;
+    elapsed = 0;
+    spawnTimer = 0;
+    nextSpawn = 100;
+    backgroundOffset = 0;
+    lastTime = 0;
+
+    obstacles = [];
+    tux = createTux();
+
+    scoreElement.textContent = "0";
+    levelElement.textContent = "1";
+
+    startScreen.classList.add("hidden");
+    gameOverScreen.classList.add("hidden");
+
+    gameRunning = true;
+    animationId = requestAnimationFrame(gameLoop);
 }
 
 // Finalizar partida
-function finishGame() {
-    clearInterval(timerInterval);
+function endGame() {
+    gameRunning = false;
 
-    finalScore.textContent =
-        "Movimientos: " + moves +
-        " | Tiempo: " + timerDisplay.textContent;
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("tuxBest", bestScore);
+        bestElement.textContent = bestScore;
+    }
 
-    victory.classList.remove("hidden");
-}
-
-// Nueva partida
-function restartGame() {
-    clearInterval(timerInterval);
-
-    firstCard = null;
-    secondCard = null;
-    lockBoard = false;
-    moves = 0;
-    matches = 0;
-    seconds = 0;
-    gameStarted = false;
-
-    movesDisplay.textContent = "0";
-    matchesDisplay.textContent = "0/8";
-    timerDisplay.textContent = "00:00";
-
-    victory.classList.add("hidden");
-
-    createBoard();
+    finalScoreElement.textContent = score;
+    gameOverScreen.classList.remove("hidden");
 }
 
 // Botones
-restartBtn.addEventListener("click", restartGame);
-playAgain.addEventListener("click", restartGame);
+startButton.addEventListener("click", startGame);
+restartButton.addEventListener("click", startGame);
 
-// Iniciar juego
-createBoard();
+// Controles: teclado
+document.addEventListener("keydown", event => {
+    if (event.code === "Space" || event.code === "ArrowUp") {
+        event.preventDefault();
+        jump();
+    }
+});
+
+// Controles: pantalla táctil o clic en el juego
+canvas.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    jump();
+});
+
+// Dibujar pantalla inicial
+tux = createTux();
+drawBackground();
+drawTux();
+drawObstacles();

@@ -1,4 +1,9 @@
 
+/* =================================
+   TUX RUN - CYBER EDITION
+   DISEÑO GENERAL
+================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -8,169 +13,292 @@
 body {
     font-family: 'Segoe UI', sans-serif;
     min-height: 100vh;
-    background: linear-gradient(135deg, #eee8ff, #d9ccfa);
+    background: linear-gradient(
+        135deg,
+        #eee8ff,
+        #d9ccfa,
+        #c7b4ef
+    );
     color: #39265f;
     padding: 25px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* CONTENEDOR PRINCIPAL */
+
 .game-container {
-    max-width: 540px;
-    margin: auto;
+    width: 100%;
+    max-width: 850px;
     background: #ffffff;
-    padding: 28px;
+    padding: 30px;
     border-radius: 25px;
-    box-shadow: 0 12px 35px rgba(76, 48, 120, 0.15);
+    box-shadow: 0 15px 40px rgba(76, 48, 120, 0.18);
     text-align: center;
+    border: 1px solid #e8defc;
+}
+
+/* =================================
+   ENCABEZADO
+================================= */
+
+.header {
+    margin-bottom: 25px;
 }
 
 .logo {
-    color: #8865c9;
-    font-size: 13px;
+    color: #9873dc;
+    font-size: 15px;
     font-weight: bold;
-    letter-spacing: 2px;
-    margin-bottom: 15px;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
 }
 
 .header h1 {
-    font-size: 34px;
+    font-size: clamp(30px, 6vw, 45px);
+    font-weight: 900;
+    letter-spacing: 3px;
     color: #65449e;
-    margin-bottom: 8px;
+    text-shadow: 2px 3px 0 #e7dcff;
 }
 
 .header p {
     color: #897da1;
     font-size: 14px;
-    margin-bottom: 25px;
+    margin-top: 8px;
 }
 
-.stats {
+/* =================================
+   PANEL DE PUNTUACIÓN
+================================= */
+
+.score-panel {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 22px;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-.stat-card {
-    background: #f1ebff;
-    padding: 13px 5px;
-    border-radius: 14px;
+.score-box {
+    background: linear-gradient(
+        135deg,
+        #f2edff,
+        #e7dcff
+    );
+    padding: 15px 8px;
+    border-radius: 15px;
+    border: 1px solid #e1d4fc;
 }
 
-.stat-card span {
+.score-box span {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
     color: #8068a8;
     margin-bottom: 7px;
 }
 
-.stat-card strong {
-    font-size: 20px;
+.score-box strong {
+    font-size: 23px;
     color: #65449e;
 }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+/* =================================
+   ESCENARIO DEL JUEGO
+================================= */
+
+.game-area {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 3px solid #b49be8;
+    background: #21183d;
+    box-shadow: 0 7px 20px rgba(76, 48, 120, 0.2);
 }
 
-.card {
-    aspect-ratio: 1;
-    border: none;
-    border-radius: 14px;
-    background: #8b70c9;
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: linear-gradient(
+        180deg,
+        #30214f,
+        #49316d
+    );
+    touch-action: manipulation;
+}
+
+/* =================================
+   PANTALLAS DE INICIO Y GAME OVER
+================================= */
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(24, 16, 48, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
     color: white;
-    cursor: pointer;
-    font-size: clamp(23px, 7vw, 36px);
-    box-shadow: 0 4px 7px rgba(76, 48, 120, 0.13);
-    transition: transform 0.2s, background 0.2s;
+    z-index: 5;
 }
 
-.card:hover:not(:disabled) {
-    transform: translateY(-3px);
+.overlay h2 {
+    font-size: clamp(24px, 5vw, 35px);
+    color: #d6c4ff;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
 }
 
-.card.revealed {
-    background: #eee7ff;
-    border: 2px solid #b39ce5;
+.overlay p {
+    font-size: 14px;
+    color: #e2d8fa;
+    margin-bottom: 15px;
 }
 
-.card.matched {
-    background: #dff5e8;
-    border: 2px solid #80cba0;
-    cursor: default;
-}
-
-.card:disabled {
-    cursor: default;
-}
-
-.restart-btn,
-#play-again {
-    margin-top: 24px;
-    border: none;
-    background: #7655b6;
-    color: white;
-    padding: 13px 28px;
-    border-radius: 25px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.restart-btn:hover,
-#play-again:hover {
-    background: #5f419b;
-}
-
-.instructions {
-    margin-top: 20px;
-    color: #897da1;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.victory {
-    margin-top: 22px;
-    background: #f1ebff;
-    padding: 20px;
-    border-radius: 16px;
-}
-
-.victory h2 {
-    color: #65449e;
+.character-icon {
+    font-size: 55px;
     margin-bottom: 10px;
 }
 
-.victory p {
-    margin: 8px 0;
+/* BOTONES */
+
+button {
+    font-family: inherit;
 }
+
+.overlay button {
+    border: none;
+    background: linear-gradient(
+        135deg,
+        #a27ce8,
+        #7651bb
+    );
+    color: white;
+    padding: 14px 25px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(162, 124, 232, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.overlay button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(162, 124, 232, 0.5);
+}
+
+.overlay button:active {
+    transform: scale(0.96);
+}
+
+/* OCULTAR ELEMENTOS */
 
 .hidden {
     display: none;
 }
 
+/* =================================
+   INSTRUCCIONES
+================================= */
+
+.instructions {
+    margin-top: 25px;
+    padding: 18px;
+    background: #f6f2ff;
+    border-radius: 16px;
+    text-align: left;
+}
+
+.instructions h3 {
+    text-align: center;
+    font-size: 13px;
+    color: #7655b6;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+
+.instruction-item span {
+    font-size: 21px;
+}
+
+.instruction-item p {
+    color: #76668f;
+    font-size: 13px;
+}
+
+/* =================================
+   PIE DE PÁGINA
+================================= */
+
 footer {
     margin-top: 25px;
     color: #a295b7;
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    line-height: 2;
 }
 
-@media (max-width: 380px) {
-    .game-container {
-        padding: 17px;
+/* =================================
+   ADAPTACIÓN A CELULARES
+================================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px 8px;
+        align-items: flex-start;
     }
 
-    .board {
+    .game-container {
+        padding: 18px 12px;
+        border-radius: 19px;
+    }
+
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .score-panel {
         gap: 7px;
     }
 
-    .stats {
-        gap: 6px;
+    .score-box {
+        padding: 12px 4px;
     }
 
-    .stat-card span {
-        font-size: 10px;
+    .score-box span {
+        font-size: 9px;
+    }
+
+    .score-box strong {
+        font-size: 19px;
+    }
+
+    .instructions {
+        padding: 14px;
+    }
+
+    .overlay p {
+        font-size: 12px;
+    }
+
+    .overlay button {
+        padding: 12px 18px;
+        font-size: 12px;
     }
 }

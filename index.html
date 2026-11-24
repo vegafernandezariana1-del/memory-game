@@ -1,66 +1,166 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#8b70c9">
-    <title>Memory Game | Cyber Edition</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,
+          maximum-scale=1.0, user-scalable=no">
+
+    <meta name="theme-color" content="#21183d">
+
+    <meta name="description"
+          content="TUX RUN: un juego arcade de ciberseguridad protagonizado por el pingüino de Linux.">
+
+    <title>TUX RUN | Cyber Edition</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <main class="game-container">
 
+        <!-- ENCABEZADO -->
         <header class="header">
-            <div class="logo">🔐 CYBER MEMORY</div>
-            <h1>Memory Game</h1>
-            <p>¡Encuentra las parejas y protege el sistema!</p>
+
+            <div class="logo">
+                🐧 TUX RUN
+            </div>
+
+            <h1>CYBER EDITION</h1>
+
+            <p>
+                ¡Ayuda a Tux a proteger el mundo digital!
+            </p>
+
         </header>
 
-        <section class="stats">
-            <div class="stat-card">
-                <span>⏱️ Tiempo</span>
-                <strong id="timer">00:00</strong>
+
+        <!-- PANEL DE PUNTUACIÓN -->
+        <section class="score-panel">
+
+            <div class="score-box">
+                <span>PUNTUACIÓN</span>
+                <strong id="score">00000</strong>
             </div>
 
-            <div class="stat-card">
-                <span>🎯 Movimientos</span>
-                <strong id="moves">0</strong>
+            <div class="score-box">
+                <span>RÉCORD</span>
+                <strong id="best-score">00000</strong>
             </div>
 
-            <div class="stat-card">
-                <span>🛡️ Parejas</span>
-                <strong id="matches">0/8</strong>
+            <div class="score-box">
+                <span>NIVEL</span>
+                <strong id="level">1</strong>
             </div>
+
         </section>
 
-        <section class="board" id="game-board"
-                 aria-label="Tablero de memoria">
+
+        <!-- ÁREA PRINCIPAL DEL JUEGO -->
+        <section class="game-area">
+
+            <canvas
+                id="gameCanvas"
+                width="800"
+                height="300"
+                aria-label="Videojuego TUX RUN. Toca la pantalla para saltar obstáculos."
+            >
+            </canvas>
+
+
+            <!-- PANTALLA DE INICIO -->
+            <div id="start-screen" class="overlay">
+
+                <div class="character-icon">
+                    🐧
+                </div>
+
+                <h2>TUX RUN</h2>
+
+                <p>
+                    ¡Ayuda a Tux a sobrevivir
+                    en el mundo cyber!
+                </p>
+
+                <button id="start-btn">
+                    ▶ INICIAR JUEGO
+                </button>
+
+            </div>
+
+
+            <!-- PANTALLA DE GAME OVER -->
+            <div id="game-over" class="overlay hidden">
+
+                <div class="character-icon">
+                    💥
+                </div>
+
+                <h2>GAME OVER</h2>
+
+                <p>
+                    ¡Tux ha sido alcanzado por un virus!
+                </p>
+
+                <p id="final-score">
+                    Puntuación: 0
+                </p>
+
+                <button id="restart-btn">
+                    ↻ VOLVER A JUGAR
+                </button>
+
+            </div>
+
         </section>
 
-        <button id="restart-btn" class="restart-btn">
-            ↻ Nueva partida
-        </button>
 
-        <p class="instructions">
-            Encuentra las 8 parejas de ciberseguridad.
-            ¡Pon a prueba tu memoria!
-        </p>
+        <!-- INSTRUCCIONES -->
+        <section class="instructions">
 
-        <section id="victory" class="victory hidden">
-            <h2>🎉 ¡Excelente trabajo!</h2>
-            <p>Has encontrado todas las parejas.</p>
-            <p id="final-score"></p>
-            <button id="play-again">Jugar otra vez</button>
+            <h3>¿CÓMO JUGAR?</h3>
+
+            <div class="instruction-item">
+                <span>👆</span>
+                <p>Toca la pantalla para que Tux salte.</p>
+            </div>
+
+            <div class="instruction-item">
+                <span>🦠</span>
+                <p>Esquiva los virus y el malware.</p>
+            </div>
+
+            <div class="instruction-item">
+                <span>⚡</span>
+                <p>Consigue puntos y supera tu récord.</p>
+            </div>
+
         </section>
 
+
+        <!-- PIE DE PÁGINA -->
         <footer>
-            <p>CYBER MEMORY | Aprende jugando 🔒</p>
+
+            <p>
+                TUX RUN © 2026
+            </p>
+
+            <p>
+                PROTECT THE SYSTEM 🔐
+            </p>
+
         </footer>
 
     </main>
 
+
+    <!-- MOTOR DEL JUEGO -->
     <script src="script.js"></script>
+
 </body>
+
 </html>
